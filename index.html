@@ -1,0 +1,572 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Shubh Mali, AI developer intern building MCP servers, agents and LLM tool-calling backends in C# and .NET.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Shubh Mali">
+<meta property="og:description" content="AI developer intern building MCP servers, agents and LLM tool-calling backends in C# and .NET.">
+<title>Shubh Mali</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout concept: an engineering drawing. Blueprint ground, hairline rules,
+   a dimension line under the name, a request-flow diagram as the centerpiece,
+   and a title block for contact details. */
+:root {
+  --bg: #0A1F3A;
+  --panel: #0E2848;
+  --grid: rgba(120, 170, 225, 0.09);
+  --line: rgba(150, 195, 240, 0.22);
+  --line-strong: rgba(150, 195, 240, 0.5);
+  --fg: #E9F1FA;
+  --muted: #A3B9D1;
+  --accent: #FFC53D;
+  --accent-ink: #1A1200;
+  --accent-text: #FFC53D;
+  --signal: #7CD6F7;
+  --font-display: "Archivo", "Arial Black", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Instrument Sans", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #F2F5F8; --panel: #E7EDF4; --grid: rgba(20, 60, 120, 0.07);
+    --line: rgba(15, 45, 90, 0.2); --line-strong: rgba(15, 45, 90, 0.5);
+    --fg: #0A1F3A; --muted: #475D77; --accent: #FFC53D; --accent-ink: #1A1200;
+    --accent-text: #9A3A06; --signal: #0B6E99; color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #F2F5F8; --panel: #E7EDF4; --grid: rgba(20, 60, 120, 0.07);
+  --line: rgba(15, 45, 90, 0.2); --line-strong: rgba(15, 45, 90, 0.5);
+  --fg: #0A1F3A; --muted: #475D77; --accent: #FFC53D; --accent-ink: #1A1200;
+  --accent-text: #9A3A06; --signal: #0B6E99; color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: auto; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+body {
+  margin: 0;
+  padding-inline: clamp(16px, 4vw, 48px);
+  padding-block: 0 48px;
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 32px 32px;
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 1160px; margin-inline: auto; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.mono { font-family: var(--font-mono); font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; }
+.muted { color: var(--muted); }
+h1, h2, h3 { font-family: var(--font-display); margin: 0; text-wrap: balance; }
+p { margin: 0; }
+section { scroll-margin-top: 72px; }
+
+/* Header */
+.bar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10;
+  margin-inline: calc(-1 * clamp(16px, 4vw, 48px));
+  padding-inline: clamp(16px, 4vw, 48px);
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  border-bottom: 1px solid var(--line);
+}
+.bar-in { max-width: 1160px; margin-inline: auto; display: flex; align-items: center; gap: 24px; height: 56px; }
+.mark { font-family: var(--font-display); font-stretch: 125%; font-weight: 800; font-size: 1.05rem; text-decoration: none; letter-spacing: 0.02em; }
+.mark span { color: var(--accent-text); }
+.nav { display: flex; gap: 22px; margin-left: auto; align-items: center; }
+.nav a { text-decoration: none; color: var(--muted); }
+.nav a:hover { color: var(--fg); }
+.btn-theme {
+  font: inherit; background: none; color: var(--fg); border: 1px solid var(--line-strong);
+  border-radius: 2px; padding: 4px 10px; cursor: pointer; min-height: 32px;
+}
+.btn-theme:hover { border-color: var(--accent); }
+@media (max-width: 720px) { .nav a.hide-sm { display: none; } .nav { gap: 14px; } }
+
+/* Hero */
+.hero { display: grid; grid-template-columns: minmax(0, 1fr); gap: 40px; padding-block: clamp(40px, 8vw, 96px) 56px; }
+@media (min-width: 960px) { .hero { grid-template-columns: minmax(0, 7fr) minmax(0, 4fr); align-items: end; } }
+.eyebrow { color: var(--accent-text); margin-bottom: 20px; }
+h1 {
+  font-stretch: 125%; font-weight: 800; text-transform: uppercase;
+  font-size: clamp(3.4rem, 12.5vw, 8.6rem); line-height: 0.88; letter-spacing: -0.02em;
+}
+h1 .l2 { display: block; color: transparent; -webkit-text-stroke: 2px var(--fg); }
+.dim { display: flex; align-items: center; gap: 12px; margin-block: 28px 24px; color: var(--muted); }
+.dim::before, .dim::after { content: ""; flex: 1; height: 1px; background: var(--line-strong); }
+.dim span { white-space: nowrap; }
+.lede { font-size: clamp(1.1rem, 2.2vw, 1.35rem); line-height: 1.5; max-width: 34em; }
+.sub { margin-top: 14px; color: var(--muted); max-width: 38em; }
+.cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+.btn {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 46px; padding: 0 20px;
+  font: 600 0.95rem var(--font-body); text-decoration: none; border-radius: 2px;
+  border: 1px solid var(--line-strong); color: var(--fg); background: transparent; cursor: pointer;
+}
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn.primary:hover { filter: brightness(1.06); }
+
+.facts { border: 1px solid var(--line-strong); background: color-mix(in srgb, var(--panel) 70%, transparent); }
+.facts dl { margin: 0; display: grid; grid-template-columns: 1fr; }
+.facts .row { padding: 12px 16px; border-top: 1px solid var(--line); }
+.facts .row:first-child { border-top: 0; }
+.facts dt { color: var(--muted); }
+.facts dd { margin: 2px 0 0; font-weight: 500; }
+
+/* Section frame */
+.sec { padding-block: 64px 8px; }
+.sec-head { display: grid; gap: 14px; margin-bottom: 36px; padding-top: 18px; border-top: 1px solid var(--line-strong); }
+.sec-head h2 { font-stretch: 112%; font-weight: 700; font-size: clamp(1.8rem, 4.4vw, 3rem); line-height: 1.05; letter-spacing: -0.01em; }
+.sec-head p { color: var(--muted); max-width: 40em; }
+.sec-head .mono { color: var(--accent-text); }
+
+/* Request flow */
+.flow { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px; }
+@media (min-width: 900px) { .flow { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 28px; } }
+.flow li { position: relative; min-width: 0; }
+.node {
+  width: 100%; height: 100%; text-align: left; font: inherit; color: var(--fg); cursor: pointer;
+  background: color-mix(in srgb, var(--panel) 70%, transparent);
+  border: 1px solid var(--line-strong); border-radius: 2px; padding: 14px 14px 16px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.node:hover { border-color: var(--signal); }
+.node .role { color: var(--muted); }
+.node .name { font-family: var(--font-display); font-stretch: 105%; font-weight: 700; font-size: 1.1rem; line-height: 1.15; }
+.node .idx { color: var(--muted); }
+.node[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.node[aria-pressed="true"] .role, .node[aria-pressed="true"] .idx { color: var(--accent-ink); }
+.flow li:not(:last-child)::after {
+  content: ""; position: absolute; background: var(--line-strong);
+  left: 50%; top: 100%; width: 1px; height: 28px;
+}
+.flow li:not(:last-child)::before {
+  content: ""; position: absolute; z-index: 1; left: calc(50% - 4px); top: calc(100% + 20px);
+  border: 4px solid transparent; border-top: 8px solid var(--line-strong); border-bottom: 0;
+}
+@media (min-width: 900px) {
+  .flow li:not(:last-child)::after { left: 100%; top: 50%; width: 28px; height: 1px; }
+  .flow li:not(:last-child)::before {
+    left: calc(100% + 20px); top: calc(50% - 4px);
+    border: 4px solid transparent; border-left: 8px solid var(--line-strong); border-right: 0;
+  }
+}
+.readout { margin-top: 28px; border: 1px solid var(--line-strong); display: grid; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 760px) { .readout { grid-template-columns: minmax(0, 1fr) auto; } }
+.readout-text { padding: 20px 20px 22px; min-height: 8.5rem; }
+.readout-text .mono { color: var(--accent-text); margin-bottom: 8px; display: block; }
+.readout-text p { font-size: 1.1rem; max-width: 40em; }
+.controls { display: flex; gap: 0; border-top: 1px solid var(--line); }
+@media (min-width: 760px) { .controls { flex-direction: column; border-top: 0; border-left: 1px solid var(--line); } }
+.controls button {
+  flex: 1; font: inherit; color: var(--fg); background: none; border: 0; cursor: pointer;
+  padding: 12px 20px; min-height: 44px; border-left: 1px solid var(--line);
+}
+.controls button:first-child { border-left: 0; }
+@media (min-width: 760px) { .controls button { border-left: 0; border-top: 1px solid var(--line); } .controls button:first-child { border-top: 0; } }
+.controls button:hover { background: color-mix(in srgb, var(--accent) 16%, transparent); }
+.note { margin-top: 14px; color: var(--muted); font-size: 0.9rem; }
+
+/* Projects */
+.proj { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; padding-block: 32px; border-top: 1px solid var(--line); }
+@media (min-width: 860px) { .proj { grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: 40px; } }
+.proj:first-of-type { border-top: 0; padding-top: 0; }
+.proj .kind { color: var(--accent-text); margin-bottom: 8px; }
+.proj h3 { font-stretch: 108%; font-weight: 700; font-size: clamp(1.4rem, 3vw, 1.9rem); line-height: 1.1; }
+.proj .body { display: grid; gap: 16px; min-width: 0; }
+.proj .body p { max-width: 42em; }
+.tags { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.tags li { font-family: var(--font-mono); font-size: 0.76rem; padding: 3px 9px; border: 1px solid var(--line-strong); border-radius: 2px; color: var(--muted); }
+.link { font-weight: 600; color: var(--accent-text); text-underline-offset: 4px; width: fit-content; }
+.link:hover { text-decoration-thickness: 2px; }
+.sub-h { margin: 40px 0 8px; color: var(--muted); }
+.earlier { display: grid; grid-template-columns: minmax(0, 1fr); border-top: 1px solid var(--line-strong); }
+@media (min-width: 760px) { .earlier { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 40px; } }
+.earlier > div { padding-block: 20px; border-bottom: 1px solid var(--line); }
+.earlier h3 { font-stretch: 105%; font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
+.earlier h3 .mono { color: var(--muted); font-family: var(--font-mono); font-stretch: 100%; font-weight: 400; margin-left: 8px; }
+.earlier p { color: var(--muted); font-size: 0.97rem; }
+
+/* Experience */
+.xp { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; padding-block: 26px; border-top: 1px solid var(--line); }
+.xp:first-of-type { border-top: 0; padding-top: 0; }
+@media (min-width: 860px) { .xp { grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: 40px; } }
+.xp h3 { font-stretch: 108%; font-size: 1.3rem; font-weight: 700; line-height: 1.15; }
+.xp .where { color: var(--muted); margin-top: 4px; }
+.xp .when { color: var(--accent-text); margin-bottom: 8px; }
+.xp ul { margin: 0; padding-left: 1.1em; display: grid; gap: 8px; max-width: 42em; }
+.xp li::marker { color: var(--accent-text); }
+
+/* Stack */
+.stack { display: grid; grid-template-columns: minmax(0, 1fr); border-top: 1px solid var(--line-strong); }
+@media (min-width: 760px) { .stack { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 40px; } }
+.stack > div { padding-block: 18px; border-bottom: 1px solid var(--line); }
+.stack h3 { font-family: var(--font-mono); font-weight: 500; font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent-text); margin-bottom: 8px; }
+.stack p { max-width: 36em; }
+
+/* Learning */
+.certs { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line-strong); }
+.certs li { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2px; padding-block: 14px; border-bottom: 1px solid var(--line); }
+@media (min-width: 760px) { .certs li { grid-template-columns: minmax(0, 1fr) auto; gap: 24px; align-items: baseline; } }
+.certs .by { color: var(--muted); }
+
+/* Contact title block */
+.tb { border: 1px solid var(--line-strong); background: color-mix(in srgb, var(--panel) 70%, transparent); display: grid; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 860px) { .tb { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.tb > div { padding: 16px 18px 18px; border-top: 1px solid var(--line); min-width: 0; }
+.tb > div:first-child { border-top: 0; }
+@media (min-width: 860px) {
+  .tb > div { border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
+  .tb > div:nth-child(-n+3) { border-top: 0; }
+  .tb > div:nth-child(3n+1) { border-left: 0; }
+}
+.tb .mono { color: var(--muted); display: block; margin-bottom: 4px; }
+.tb .v { font-weight: 500; overflow-wrap: anywhere; }
+.tb a.v { text-underline-offset: 4px; }
+.copy { margin-left: 10px; font: 500 0.8rem var(--font-mono); color: var(--accent-text); background: none; border: 1px solid var(--line-strong); border-radius: 2px; padding: 2px 8px; cursor: pointer; }
+.copy:hover { border-color: var(--accent); }
+.tb .wide { grid-column: 1 / -1; }
+footer { margin-top: 40px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="bar-in">
+    <a class="mark" href="#top" aria-label="Shubh Mali, top of page">SM<span>.</span></a>
+    <nav class="nav mono" aria-label="Sections">
+      <a class="hide-sm" href="#flow">Request flow</a>
+      <a class="hide-sm" href="#work">Work</a>
+      <a class="hide-sm" href="#experience">Experience</a>
+      <a class="hide-sm" href="#stack">Stack</a>
+      <a href="#contact">Contact</a>
+      <button class="btn-theme mono" id="theme" type="button" aria-label="Switch between light and dark theme">Theme</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap" id="top">
+
+  <section class="hero" aria-label="Introduction">
+    <div>
+      <p class="eyebrow mono">AI Developer Intern · Sagitec Solutions · Pune, India</p>
+      <h1>Shubh<span class="l2">Mali</span></h1>
+      <div class="dim mono" aria-hidden="true"><span>LLMs · MCP · Agents</span></div>
+      <p class="lede">I build the layer between language models and real business systems: MCP servers, agents and tool-calling backends in C# and .NET.</p>
+      <p class="sub">Third-year B.Tech student in AI and Data Science. Six months into an internship where I design the MCP and agent architecture for an enterprise platform.</p>
+      <div class="cta">
+        <a class="btn primary" href="#work">See the work</a>
+        <a class="btn" href="#contact">Get in touch</a>
+      </div>
+    </div>
+    <aside class="facts" aria-label="At a glance">
+      <dl>
+        <div class="row"><dt class="mono">Now</dt><dd>AI Developer Intern, Sagitec Solutions</dd></div>
+        <div class="row"><dt class="mono">Focus</dt><dd>MCP servers, multi-agent design, LLM tool calling, enterprise auth</dd></div>
+        <div class="row"><dt class="mono">Main stack</dt><dd>C#, ASP.NET Core, Blazor, SQL Server</dd></div>
+        <div class="row"><dt class="mono">Studying</dt><dd>B.Tech AI &amp; Data Science, Vishwakarma University, with a Cloud Computing minor</dd></div>
+      </dl>
+    </aside>
+  </section>
+
+  <section class="sec" id="flow" aria-labelledby="flow-h">
+    <div class="sec-head">
+      <span class="mono">How I think about it</span>
+      <h2 id="flow-h">One request, end to end</h2>
+      <p>Most of my work sits between a language model and a business system. This is the path a question takes through my AI Car Advisor project. The rule I keep: the model never touches the database.</p>
+    </div>
+
+    <ol class="flow" id="nodes" aria-label="Request path, click a stage to read what happens there"></ol>
+
+    <div class="readout">
+      <div class="readout-text">
+        <span class="mono" id="r-label"></span>
+        <p id="r-text"></p>
+      </div>
+      <div class="controls">
+        <button type="button" id="prev">Previous</button>
+        <button type="button" id="play" aria-pressed="false">Pause</button>
+        <button type="button" id="next">Next</button>
+      </div>
+    </div>
+    <p class="note">Simplified for reading. Each stage is a separate project in the repository.</p>
+  </section>
+
+  <section class="sec" id="work" aria-labelledby="work-h">
+    <div class="sec-head">
+      <span class="mono">Selected work</span>
+      <h2 id="work-h">Projects</h2>
+      <p>Recent work is about connecting models to real systems safely. Earlier work is in machine learning and cloud.</p>
+    </div>
+
+    <article class="proj">
+      <header>
+        <p class="kind mono">Personal project</p>
+        <h3>AI Car Advisor</h3>
+      </header>
+      <div class="body">
+        <p>A conversational car advisor built as a four-project .NET monorepo: a REST API, an HTTP MCP server, a Blazor UI and a Microsoft Agent Framework agent. The model reaches data only through MCP tools, and only the API touches the database.</p>
+        <p>MCP resources and prompts load from JSON manifests, so adding one needs no C# change. The database layer uses an adapter pattern for SQLite and SQL Server. Authentication work covers OAuth 2.1 with PKCE, JWT validation and Microsoft Entra ID.</p>
+        <ul class="tags" aria-label="Technologies"><li>C#</li><li>ASP.NET Core</li><li>MCP</li><li>Microsoft Agent Framework</li><li>OpenRouter</li><li>Blazor</li><li>SQLite</li><li>SQL Server</li></ul>
+        <a class="link" href="https://github.com/shubhmali19/ai-car-advisor" target="_blank" rel="noopener">Source on GitHub ↗</a>
+      </div>
+    </article>
+
+    <article class="proj">
+      <header>
+        <p class="kind mono">Minor project · Cloud Computing</p>
+        <h3>ORION</h3>
+      </header>
+      <div class="body">
+        <p>An autonomous incident investigation system. Agents form and test hypotheses about a production incident using evidence gathered through MCP tools, then work toward a remediation. It follows the same evidence-first approach as my other MCP work, applied to site reliability.</p>
+        <p>Built with Node.js, TypeScript and React on the official MCP SDK. Investigation artifacts are stored in Cloudflare R2, an S3-compatible object store.</p>
+        <ul class="tags" aria-label="Technologies"><li>TypeScript</li><li>Node.js</li><li>React</li><li>MCP SDK</li><li>Multi-agent</li><li>Cloudflare R2</li></ul>
+        <a class="link" href="https://github.com/shubhmali19/orion-incident-investigator" target="_blank" rel="noopener">Source on GitHub ↗</a>
+      </div>
+    </article>
+
+    <article class="proj">
+      <header>
+        <p class="kind mono">Internship · Sagitec Solutions</p>
+        <h3>Role-aware enterprise assistant</h3>
+      </header>
+      <div class="body">
+        <p>I work with one other intern on an AI assistant that answers questions about a large enterprise platform according to who is asking. My part includes the MCP layer. The design routes work from an orchestrator to specialist agents, each with its own skills and tools, and the model never queries the database directly.</p>
+        <p>We are building from the bottom up: the MCP server and tools first, then the agents and orchestrator above them. This is an internal project, so the details stay private.</p>
+        <ul class="tags" aria-label="Technologies"><li>MCP</li><li>Microsoft Agent Framework</li><li>Multi-agent orchestration</li><li>Microsoft Entra ID</li><li>SQL Server</li></ul>
+      </div>
+    </article>
+
+    <article class="proj">
+      <header>
+        <p class="kind mono">Internship · Sagitec Solutions</p>
+        <h3>Enterprise MCP Template</h3>
+      </header>
+      <div class="body">
+        <p>A design for a reusable template that teams can start from when they build enterprise MCP servers. It has a four-layer dependency model, a phased delivery plan and recommendations for enterprise features. The AI Car Advisor codebase was the reference for what to reuse.</p>
+        <ul class="tags" aria-label="Focus areas"><li>Architecture</li><li>MCP</li><li>Documentation</li></ul>
+      </div>
+    </article>
+
+    <h3 class="sub-h mono">Earlier work in ML and cloud</h3>
+    <div class="earlier">
+      <div>
+        <h3>Complaint Management System<span class="mono">2026</span></h3>
+        <p>Sorts incoming complaints into categories with NLP text classification (NLTK, spaCy) and takes them in through Google Forms. The research was accepted and published as an academic paper.</p>
+      </div>
+      <div>
+        <h3>Economic Forecasting<span class="mono">2025</span></h3>
+        <p>Regression and time-series models projecting GDP, inflation and unemployment ten years ahead for India, Brazil, Germany and the USA, with Streamlit dashboards for comparing countries.</p>
+      </div>
+      <div>
+        <h3>Cloud Finance Tracker<span class="mono">2025</span></h3>
+        <p>A finance tracking app in Python on AWS with a relational SQL database, covering transactions, reports and access control for sensitive records.</p>
+      </div>
+      <div>
+        <h3>Pune Daily Exotics<span class="mono">2024</span></h3>
+        <p>An automotive content brand with its own Wix Studio website, plus the video production, editing and distribution behind it.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="experience" aria-labelledby="xp-h">
+    <div class="sec-head">
+      <span class="mono">Experience</span>
+      <h2 id="xp-h">Where I have worked</h2>
+    </div>
+
+    <div class="xp">
+      <div>
+        <p class="when mono">2026 – Present</p>
+        <h3>AI Developer Intern</h3>
+        <p class="where">Sagitec Solutions, Pune</p>
+      </div>
+      <ul>
+        <li>Design and build the MCP and agent layers of an internal enterprise AI assistant, in a two-person intern team.</li>
+        <li>Wrote the design for a reusable Enterprise MCP Template: dependency model, phased tasks and enterprise feature recommendations.</li>
+        <li>Researched MCP authentication (OAuth 2.1, PKCE, JWT, Microsoft Entra ID), Microsoft Graph and spec-driven development with SpecKit, as topics assigned by my supervisor.</li>
+      </ul>
+    </div>
+
+    <div class="xp">
+      <div>
+        <p class="when mono">2025 – Present</p>
+        <h3>Social Media Head</h3>
+        <p class="where">NextGen AI Club, Vishwakarma University</p>
+      </div>
+      <ul>
+        <li>Lead the club's social media team and set its content strategy.</li>
+        <li>Coach team members on content creation, covering promotion for 6+ technical and non-technical events.</li>
+      </ul>
+    </div>
+
+    <div class="xp">
+      <div>
+        <p class="when mono">2023 – 2027</p>
+        <h3>B.Tech, AI &amp; Data Science</h3>
+        <p class="where">Vishwakarma University, Pune</p>
+      </div>
+      <ul>
+        <li>Minor in Cloud Computing, with ORION as the minor project.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="sec" id="stack" aria-labelledby="stack-h">
+    <div class="sec-head">
+      <span class="mono">Toolbox</span>
+      <h2 id="stack-h">What I work with</h2>
+    </div>
+    <div class="stack">
+      <div>
+        <h3>AI and agents</h3>
+        <p>Model Context Protocol (servers, tools, resources, prompts), Microsoft Agent Framework, LLM tool calling, OpenRouter, multi-agent orchestration, retrieval and document search</p>
+      </div>
+      <div>
+        <h3>Backend</h3>
+        <p>C#, .NET, ASP.NET Core, REST APIs, Roslyn code analysis, OAuth 2.1, JWT, Microsoft Entra ID</p>
+      </div>
+      <div>
+        <h3>Frontend</h3>
+        <p>Blazor, TypeScript, React, Streamlit</p>
+      </div>
+      <div>
+        <h3>Data and ML</h3>
+        <p>SQL Server, SQLite, Python, pandas, NumPy, scikit-learn, NLTK, spaCy</p>
+      </div>
+      <div>
+        <h3>Cloud and tooling</h3>
+        <p>AWS (EC2, S3), Cloudflare R2, Podman, Git and GitHub, Visual Studio, VS Code</p>
+      </div>
+      <div>
+        <h3>Also</h3>
+        <p>Python, C++, SQL, Wix Studio, video editing, content strategy</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="learning" aria-labelledby="learn-h">
+    <div class="sec-head">
+      <span class="mono">Certifications</span>
+      <h2 id="learn-h">Formal learning</h2>
+    </div>
+    <ul class="certs">
+      <li><span>IBM Full Stack Software Developer Professional Certificate</span><span class="by mono">IBM · Nov 2025</span></li>
+      <li><span>AI For Everyone</span><span class="by mono">DeepLearning.AI · Nov 2025</span></li>
+      <li><span>Generative AI Powered Project Plans</span><span class="by mono">LinkedIn Learning · Mar 2025</span></li>
+      <li><span>Four project and program management courses, including Program Management for IT Professionals</span><span class="by mono">Coursera · PMI</span></li>
+    </ul>
+  </section>
+
+  <section class="sec" id="contact" aria-labelledby="contact-h">
+    <div class="sec-head">
+      <span class="mono">Contact</span>
+      <h2 id="contact-h">Let's talk about what you are building</h2>
+      <p>I am open to conversations about MCP, agent systems and AI engineering roles.</p>
+    </div>
+    <div class="tb">
+      <div><span class="mono">Name</span><span class="v">Shubh Mali</span></div>
+      <div><span class="mono">Role</span><span class="v">AI Developer Intern</span></div>
+      <div><span class="mono">Base</span><span class="v">Pune, India</span></div>
+      <div class="wide-ish"><span class="mono">Email</span><span class="v" id="email">shubhmali19@gmail.com</span><button class="copy" type="button" id="copy" aria-label="Copy email address">Copy</button></div>
+      <div><span class="mono">LinkedIn</span><a class="v" href="https://www.linkedin.com/in/shubh-mali" target="_blank" rel="noopener">linkedin.com/in/shubh-mali</a></div>
+      <div><span class="mono">GitHub</span><a class="v" href="https://github.com/shubhmali19" target="_blank" rel="noopener">github.com/shubhmali19</a></div>
+    </div>
+    <footer class="mono"><span>Shubh Mali · Portfolio</span><span>Revised October 2026</span></footer>
+  </section>
+</main>
+
+<script>
+(function () {
+  var steps = [
+    { name: "Blazor UI", role: "Interface", text: "The user asks a question in plain language. The UI hands it to the agent." },
+    { name: "MAF Agent", role: "Orchestrator", text: "The agent sends the question to the model together with the list of tools it is allowed to use." },
+    { name: "LLM", role: "Reasoning", text: "The model decides a tool is needed and replies with a tool call. It only describes the call. It runs nothing itself." },
+    { name: "MCP Server", role: "Tools", text: "The agent forwards the call over HTTP. The server checks the arguments and runs the matching tool." },
+    { name: "CarAPI", role: "REST API", text: "The tool calls the REST API. Business rules and data access live here, and nowhere else." },
+    { name: "Database", role: "Storage", text: "Only the API reads the database, through an adapter for SQLite or SQL Server. The result travels back up the chain, and the model writes the final answer." }
+  ];
+  var list = document.getElementById("nodes");
+  var label = document.getElementById("r-label");
+  var text = document.getElementById("r-text");
+  var playBtn = document.getElementById("play");
+  var current = 0, timer = null, playing = false;
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  steps.forEach(function (s, i) {
+    var li = document.createElement("li");
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "node"; b.setAttribute("aria-pressed", "false");
+    b.innerHTML = '<span class="idx mono">Stage ' + (i + 1) + '</span><span class="name"></span><span class="role mono"></span>';
+    b.querySelector(".name").textContent = s.name;
+    b.querySelector(".role").textContent = s.role;
+    b.addEventListener("click", function () { stop(); show(i); });
+    li.appendChild(b); list.appendChild(li);
+  });
+  var nodes = list.querySelectorAll(".node");
+
+  function show(i) {
+    current = (i + steps.length) % steps.length;
+    nodes.forEach(function (n, k) { n.setAttribute("aria-pressed", k === current ? "true" : "false"); });
+    label.textContent = "Stage " + (current + 1) + " of " + steps.length + " · " + steps[current].name;
+    text.textContent = steps[current].text;
+  }
+  function start() {
+    if (timer) return;
+    playing = true; playBtn.textContent = "Pause"; playBtn.setAttribute("aria-pressed", "false");
+    timer = setInterval(function () { show(current + 1); }, 3600);
+  }
+  function stop() {
+    playing = false; playBtn.textContent = "Play"; playBtn.setAttribute("aria-pressed", "true");
+    if (timer) { clearInterval(timer); timer = null; }
+  }
+  document.getElementById("prev").addEventListener("click", function () { stop(); show(current - 1); });
+  document.getElementById("next").addEventListener("click", function () { stop(); show(current + 1); });
+  playBtn.addEventListener("click", function () { playing ? stop() : start(); });
+
+  show(0);
+  if (reduce) { stop(); } else { start(); }
+
+  // Theme toggle: flips whatever theme is currently showing.
+  var root = document.documentElement;
+  document.getElementById("theme").addEventListener("click", function () {
+    var explicit = root.getAttribute("data-theme");
+    var isLight = explicit ? explicit === "light"
+      : (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches);
+    root.setAttribute("data-theme", isLight ? "dark" : "light");
+  });
+
+  // Copy email, with a fallback to selecting the text.
+  var copyBtn = document.getElementById("copy");
+  var emailEl = document.getElementById("email");
+  copyBtn.addEventListener("click", function () {
+    function selectIt() {
+      var r = document.createRange(); r.selectNodeContents(emailEl);
+      var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+      copyBtn.textContent = "Selected";
+    }
+    try {
+      navigator.clipboard.writeText(emailEl.textContent.trim()).then(function () {
+        copyBtn.textContent = "Copied";
+        setTimeout(function () { copyBtn.textContent = "Copy"; }, 1800);
+      }, selectIt);
+    } catch (e) { selectIt(); }
+  });
+})();
+</script>
+
+</body>
+</html>
